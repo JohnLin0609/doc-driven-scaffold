@@ -1,0 +1,54 @@
+# Dev stack for {{PROJECT_NAME}}. Parameterized skeleton — keep the services you need, delete
+# the rest. Ports are placeholders; pick values that don't collide on your host.
+#
+#   docker compose -f deploy/docker-compose.dev.yml up -d --build
+#
+name: "{{COMPOSE_PROJECT_NAME}}"
+
+services:
+  # --- Persistent store (delete if the project has no database) ---
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: "{{DB_USER}}"
+      POSTGRES_PASSWORD: "{{DB_PASSWORD}}"
+      POSTGRES_DB: "{{DB_NAME}}"
+    ports:
+      - "{{DB_PORT}}:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  # --- Cache / message backplane (delete if unused) ---
+  cache:
+    image: redis:7
+    ports:
+      - "{{CACHE_PORT}}:6379"
+
+  # --- Backend service ---
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+    environment:
+      # {{BACKEND_ENV}} — one `KEY: value` per line, e.g.:
+      # DATABASE_URL: postgresql://{{DB_USER}}:{{DB_PASSWORD}}@db:5432/{{DB_NAME}}
+      # REDIS_URL: redis://cache:6379/0
+      APP_ENV: dev
+    ports:
+      - "{{BACKEND_PORT}}:8000"
+    depends_on:
+      - db
+      - cache
+
+  # --- Static frontend (nginx; delete if the frontend has its own build/host) ---
+  web:
+    image: nginx:alpine
+    volumes:
+      - ../src/web:/usr/share/nginx/html:ro
+    ports:
+      - "{{WEB_PORT}}:80"
+    depends_on:
+      - backend
+
+volumes:
+  dbdata:

@@ -7,6 +7,11 @@ Ask the **open** questions as plain text in the conversation. Ask the **choice**
 `AskUserQuestion`, batched into the two rounds shown (≤4 per call). Offer the listed default as
 the recommended option.
 
+**Every choice round must leave the user-insertable free-text option available** — the user can
+always type their own answer instead of picking a listed one. `AskUserQuestion` renders this as
+the "Other" option automatically; never suppress or work around it. When a user's free-text
+answer arrives, treat it as the value for that field verbatim.
+
 ## Open questions (plain text)
 
 | # | Question | Fills |

@@ -28,8 +28,9 @@ live in `QUESTIONS.md` beside this file — **read it before Step 1**.
 ## Step 1 — Interview
 
 Ask the questions defined in `QUESTIONS.md`: the open ones as plain text, the choice ones with
-`AskUserQuestion` in its two rounds. Also ask the user for **today's date** (fills `TODAY`; you
-cannot read the clock).
+`AskUserQuestion` in its two rounds. Every choice round must keep the user-insertable free-text
+option ("Other") available so the user can answer in their own words rather than only picking a
+listed choice. Also ask the user for **today's date** (fills `TODAY`; you cannot read the clock).
 
 **Done when** every placeholder in the `QUESTIONS.md` map has a value or is marked a guided stub,
 and the two gate answers (hardware/operator gate → `HIL-checklist.md`; deploy → `deploy/`) are recorded.

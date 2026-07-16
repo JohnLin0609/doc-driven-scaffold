@@ -3,14 +3,21 @@
 The single source of truth for what `doc-driven-init` asks and where each answer lands. The
 interview is deterministic: same answers → same rendered doc set.
 
-Ask the **open** questions as plain text in the conversation. Ask the **choice** questions with
-`AskUserQuestion`, batched into the two rounds shown (≤4 per call). Offer the listed default as
-the recommended option.
+**Ask one thing at a time — never dump the whole question list as one plain-text wall.** A wall of
+open questions is the failure mode to avoid: the user can't tell how to answer it. Instead:
 
-**Every choice round must leave the user-insertable free-text option available** — the user can
-always type their own answer instead of picking a listed one. `AskUserQuestion` renders this as
-the "Other" option automatically; never suppress or work around it. When a user's free-text
-answer arrives, treat it as the value for that field verbatim.
+- **Open questions** — ask **one at a time** (or a tight cluster of at most 2–3 closely related
+  ones), as a single plain-text prompt, and wait for the answer before moving on. When an open
+  question has a natural default or a small set of sensible presets (e.g. feature branch, use-case
+  prefix), prefer to ask it with `AskUserQuestion` instead, so the user can pick or insert.
+- **Choice questions** — ask with `AskUserQuestion` in the two rounds shown (≤4 per call), the
+  listed default first as the recommended option.
+
+**Every `AskUserQuestion` must leave the user-insertable free-text option available** — the user
+can always type their own answer instead of picking a listed one. It renders this as the "Other"
+option automatically; never suppress or work around it. Treat a free-text answer as that field's
+value verbatim. This "options-with-an-insertable-Other, one step at a time" flow is the whole
+point: the user should never face a blank wall of questions.
 
 ## Open questions (plain text)
 

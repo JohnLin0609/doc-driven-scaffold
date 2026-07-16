@@ -47,8 +47,10 @@ Acceptance for anything {{HIL_SCOPE}} is signed off against `specs/test/HIL-chec
 
 ## Conventions & rules
 
-- **NEVER use `rm -rf`** — blocked by the `command-validator` hook (`.claude/hooks/command-validator.py`).
-  Use `rm <file>` for files, `rmdir` for empty dirs.
+- **Destructive commands are blocked** by the guardrails hook
+  (`.claude/hooks/block-dangerous-commands.sh`, requires `jq`): `rm -rf` and friends, plus
+  destructive git (`push`, `reset --hard`, `clean -f`, `branch -D`, `checkout .`, `restore .`).
+  Use `rm <file>` / `rmdir` for deletes; ask the user to run any blocked git command.
 - **Language:** project docs are in **{{DOCS_LANGUAGE}}**; keep code, identifiers, and technical
   terms in English.
 - **Directory roles:** `/src` = formal code; `/src-xxxx` = purpose-built tools (each needs a

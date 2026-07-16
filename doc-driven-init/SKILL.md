@@ -7,8 +7,8 @@ disable-model-invocation: true
 # doc-driven-init
 
 Stand up a **doc-driven** project environment: one `CLAUDE.md` control surface, a structured
-`specs/` doc set, and a real `command-validator` hook — customized to the project by a short
-**interview**. You run this by hand; it never fires on its own.
+`specs/` doc set, and a real guardrails hook (`block-dangerous-commands.sh`) — customized to the
+project by a short **interview**. You run this by hand; it never fires on its own.
 
 The doc set it produces (the seven living docs):
 
@@ -65,12 +65,13 @@ Render their placeholders the same way.
 
 ## Step 5 — Install the hook
 
-Copy `templates/claude/hooks/command-validator.py` to `<target>/.claude/hooks/` and
+Copy `templates/claude/hooks/block-dangerous-commands.sh` to `<target>/.claude/hooks/` and
 `templates/claude/settings.json` to `<target>/.claude/settings.json`. Apply the Round-2 guardrail
-choices by editing the `RULES` list in the copied hook. Make the hook executable.
+choices by editing the `DANGEROUS_PATTERNS` list in the copied hook. Make the hook executable
+(`chmod +x`). The hook needs `jq` on the host — mention this in the summary.
 
-**Done when** `<target>/.claude/hooks/command-validator.py` exists and `<target>/.claude/settings.json`
-references it under `hooks.PreToolUse`.
+**Done when** `<target>/.claude/hooks/block-dangerous-commands.sh` exists (executable) and
+`<target>/.claude/settings.json` references it under `hooks.PreToolUse`.
 
 ## Step 6 — Summarize
 

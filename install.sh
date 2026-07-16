@@ -30,7 +30,7 @@ fi
 mkdir -p "$DEST"
 rm -rf "${DEST:?}/${SKILL}"
 cp -r "$TMP/src/${SKILL}" "$DEST/${SKILL}"
-chmod +x "$DEST/${SKILL}/templates/claude/hooks/command-validator.py" 2>/dev/null || true
+chmod +x "$DEST/${SKILL}/templates/claude/hooks/block-dangerous-commands.sh" 2>/dev/null || true
 
 echo "Installed: ${DEST}/${SKILL}"
 echo "Next: restart Claude Code in ${TARGET} (or run /skills), then invoke /${SKILL}"

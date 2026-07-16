@@ -28,5 +28,5 @@ Project: {{PROJECT_NAME}}. Authoritative requirements: `specs/pr/pr.md`
 
 ### {{TODAY}} — project scaffolded (doc-driven environment)
 - Initialized the doc set (CLAUDE.md, pr.md, HANDOFF.md, decisions.md, ARCHITECTURE.md, this
-  file) and the `command-validator` hook via the `doc-driven-init` skill.
+  file) and the guardrails hook (`block-dangerous-commands.sh`) via the `doc-driven-init` skill.
 - Next: fill in the domain specifics and define the data model / core contract first.

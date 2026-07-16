@@ -39,7 +39,7 @@ answer arrives, treat it as the value for that field verbatim.
 | # | Question | Options (default first) | Fills / gates |
 |---|----------|-------------------------|---------------|
 | C5 | Generate a `deploy/` docker-compose stack? | yes · no | **gates** the `deploy/` folder |
-| C6 | Extra guardrails for the command-validator hook? (multi-select) | block `rm -rf` (always on) · warn on `git push` · block writes to secret files | edits `command-validator.py` RULES |
+| C6 | Extra guardrails for the block-dangerous-commands hook? (multi-select) | `rm -rf` + fork bombs + destructive git (`push`/`reset --hard`/`clean`/`branch -D`/`checkout .`/`restore .`) are on by default · also block writes to secret files (`.env`, `*.pem`, `id_*`) | edits the `DANGEROUS_PATTERNS` list in `block-dangerous-commands.sh` |
 
 ## Derivation rules
 

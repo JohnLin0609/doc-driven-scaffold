@@ -27,7 +27,7 @@ doc-driven-scaffold/
         ├── specs/architecture/ARCHITECTURE.md
         ├── specs/test/HIL-checklist.md          (optional; gated by the interview)
         ├── claude/settings.json
-        ├── claude/hooks/command-validator.py    (a REAL rm -rf blocker)
+        ├── claude/hooks/block-dangerous-commands.sh  (blocks rm -rf + destructive git)
         └── deploy/                              (optional; gated by the interview)
 ```
 
@@ -99,16 +99,53 @@ requirement.
 
 ## The hook
 
-`templates/claude/hooks/command-validator.py` is a real `PreToolUse` hook (matcher `Bash`, pure
-stdlib) that denies destructive commands (`rm -rf` and friends) and tells Claude what to do
-instead. `templates/claude/settings.json` wires it. Test it directly:
+`templates/claude/hooks/block-dangerous-commands.sh` is a real `PreToolUse` hook (matcher `Bash`)
+that denies destructive commands and tells Claude to use a safe alternative or ask you. It blocks:
+
+- **`rm -rf`** and its variants (`-fr`, `-Rf`, separate `-r -f`, `--recursive --force`) + fork bombs
+- **destructive git**: `push` (incl. `--force`), `reset --hard`, `clean -f`/`-fd`, `branch -D`,
+  `checkout .`, `restore .`
+
+The git rules and the script's structure are vendored from Matt Pocock's
+[`git-guardrails-claude-code`](https://github.com/mattpocock/skills) (MIT — see
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)); the `rm -rf` / fork-bomb rules are added here.
+`templates/claude/settings.json` wires it. **Requires `jq`** on the host. Test it directly:
 
 ```bash
-echo '{"tool_name":"Bash","tool_input":{"command":"rm -rf build"}}' \
-  | python3 doc-driven-init/templates/claude/hooks/command-validator.py; echo "exit=$?"
-# → prints a deny decision, exit=2
+echo '{"tool_name":"Bash","tool_input":{"command":"git push"}}' \
+  | bash doc-driven-init/templates/claude/hooks/block-dangerous-commands.sh; echo "exit=$?"
+# → BLOCKED: ... , exit=2
 
 echo '{"tool_name":"Bash","tool_input":{"command":"ls -la"}}' \
-  | python3 doc-driven-init/templates/claude/hooks/command-validator.py; echo "exit=$?"
+  | bash doc-driven-init/templates/claude/hooks/block-dangerous-commands.sh; echo "exit=$?"
 # → no output, exit=0 (allowed)
 ```
+
+## Companion skills — Matt Pocock
+
+This scaffold is the one thing Matt Pocock's [skills](https://github.com/mattpocock/skills) don't
+provide: an interview-driven scaffolder for a whole doc-driven environment. For everything else in
+the engineering loop, prefer **his** composable skills rather than reinventing them.
+
+Install his set (pick the skills you want, then run `/setup-matt-pocock-skills` once per repo):
+
+```bash
+npx skills@latest add mattpocock/skills
+# or, as a managed Claude Code plugin:
+#   /plugin marketplace add mattpocock/skills
+#   /plugin install mattpocock-skills@mattpocock
+```
+
+Recommended companions and when to reach for each:
+
+| Skill | Use it to |
+|-------|-----------|
+| `to-spec` | Evolve `pr.md` from a conversation (synthesis, no re-interview). |
+| `handoff` | Write a session-handoff doc when compacting a conversation. |
+| `codebase-design`, `domain-modeling` | Borrow the deep-module / domain vocabulary while filling `ARCHITECTURE.md`. |
+| `tdd` | Drive the BDD→TDD method this scaffold assumes. |
+| `code-review`, `diagnosing-bugs`, `implement` | The day-to-day engineering loop. |
+| `writing-great-skills` | Author or refine skills (including this one). |
+
+**Overlap note:** the bundled guardrails hook already merges his `git-guardrails-claude-code` rules,
+so installing that one separately is optional — everything else above is additive.

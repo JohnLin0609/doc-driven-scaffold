@@ -46,29 +46,34 @@ doc-driven-scaffold/
 
 ## Install
 
-The skill is self-contained (`templates/` and `QUESTIONS.md` live inside its one folder), so a
-single `cp -r` is the whole install — nothing else is touched.
-
-**Project-level (recommended — scoped to one repo, keeps your global config clean):**
+**One-liner (recommended)** — from the target project's root, paste and run as-is (no edits):
 
 ```bash
-# from the target project's root
-mkdir -p .claude/skills
-cp -r /path/to/doc-driven-scaffold/doc-driven-init .claude/skills/doc-driven-init
+bash <(curl -fsSL https://raw.githubusercontent.com/JohnLin0609/doc-driven-scaffold/main/install.sh)
 ```
 
-The skill is then available as `/doc-driven-init` only when Claude Code runs in that project.
-`.claude/skills/` is a normal directory: commit it to share the skill with the repo's
-collaborators, or add it to `.gitignore` to keep it local-only.
-
-**Global (available in every project):**
+Private-repo note: the raw URL needs auth, so if the `curl` form 404s, clone-then-run instead —
+this uses the GitHub CLI credentials and works the same:
 
 ```bash
-cp -r /path/to/doc-driven-scaffold/doc-driven-init ~/.claude/skills/doc-driven-init
+gh repo clone JohnLin0609/doc-driven-scaffold /tmp/dds -- --depth 1 && bash /tmp/dds/install.sh; rm -rf /tmp/dds
+```
+
+Either form installs the skill into `./.claude/skills/doc-driven-init` (or pass a project path:
+`install.sh ~/code/myapp`). Re-running is safe — it replaces any existing copy. Then restart
+Claude Code in that project (or run `/skills`) and invoke `/doc-driven-init`.
+
+**Manual copy** — the skill is self-contained (`templates/` and `QUESTIONS.md` live inside its one
+folder), so a single `cp -r` also works, project-level or global:
+
+```bash
+mkdir -p .claude/skills && cp -r /path/to/doc-driven-scaffold/doc-driven-init .claude/skills/doc-driven-init   # project
+cp -r /path/to/doc-driven-scaffold/doc-driven-init ~/.claude/skills/doc-driven-init                            # global
 ```
 
 Notes:
-- If the skill exists in both locations, the **project** copy wins.
+- Project-level keeps the skill scoped to one repo and out of your global config; if the skill
+  exists in both locations, the **project** copy wins.
 - The invocation name comes from the `name:` field in `SKILL.md` (`doc-driven-init`), not the
   folder name — keep them matching if you rename.
 
